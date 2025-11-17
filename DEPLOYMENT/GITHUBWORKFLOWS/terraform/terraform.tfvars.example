@@ -1,0 +1,8 @@
+environment                      = "prod"
+location                         = "eastus"
+project_name                     = "applibrarykit"
+app_service_sku                  = "B2"
+storage_account_tier             = "Standard"
+storage_account_replication_type = "GRS"
+dotnet_runtime_version           = "8.0"
+node_runtime_version             = "18"
