@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login  from './components/Login';
 import Home from './components/Home';
 import AboutUs from './components/AboutUs';
-// Example authentication flag (you’d normally get this from context or state)
+// Example authentication flag
 const isAuthenticated = false; // change to `true` to simulate a logged-in user
 
 // const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -22,9 +22,9 @@ function App() {
     <Router>     
       <Routes>
         <Route path="/" element={<Login />} />
-         <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
-             <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/aboutus" element={<AboutUs />} />
       </Routes>
     </Router>
     </header>

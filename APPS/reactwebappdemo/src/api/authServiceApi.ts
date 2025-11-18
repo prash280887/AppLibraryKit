@@ -12,9 +12,11 @@ export interface LoginRequest {
  * User information model
  */
 export interface UserInfo {
+  userId: number;
   username: string;
   email: string;
   fullName: string;
+  roles: string[];
 }
 
 /**
