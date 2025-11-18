@@ -1,6 +1,4 @@
 import React, { useState  } from "react";
-import { BrowserRouter as Router, Routes, Route, Link , useLocation } from 'react-router-dom';
-import { getEmployees } from "../api/employeeServiceApi";
 import { Header } from "./Header";
 
 export const Home: React.FC = () => {
