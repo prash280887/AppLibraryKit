@@ -68,4 +68,8 @@ output "api_url" {
 output "swagger_url" {
   value       = "https://${azurerm_linux_web_app.api.default_hostname}/swagger"
   description = "Swagger UI endpoint for the API"
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

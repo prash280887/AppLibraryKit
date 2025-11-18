@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GitHub Workflows - Quick Start Guide
 
 Fast-track setup for GitHub CI/CD deployment of AppLibraryKit to Azure.
@@ -35,11 +36,34 @@ gh secret set AZURE_SUBSCRIPTION_ID --body "$SUBSCRIPTION_ID"
 gh secret set AZURE_TENANT_ID --body "$TENANT_ID"
 gh secret set AZURE_CLIENT_ID --body "<appId from above>"
 gh secret set AZURE_CLIENT_SECRET --body "<password from above>"
+=======
+# Quick Start Guide
+
+## 5-Minute Setup
+
+### 1. Create Azure Service Principal
+```bash
+SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+az ad sp create-for-rbac \
+  --name "github-actions-applibrarykit" \
+  --role "Contributor" \
+  --scopes "/subscriptions/$SUBSCRIPTION_ID" \
+  --output json
+```
+
+### 2. Add GitHub Secrets
+```bash
+gh secret set AZURE_SUBSCRIPTION_ID --body "<value>"
+gh secret set AZURE_TENANT_ID --body "<value>"
+gh secret set AZURE_CLIENT_ID --body "<value>"
+gh secret set AZURE_CLIENT_SECRET --body "<value>"
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 gh secret set AZURE_RESOURCE_GROUP --body "applibrarykit-prod-rg"
 gh secret set AZURE_STORAGE_ACCOUNT --body "applibrarykit<suffix>"
 gh secret set AZURE_APPSERVICE_NAME --body "applibrarykit-prod-api"
 ```
 
+<<<<<<< HEAD
 ### 3. Deploy (1 min)
 
 ```bash
@@ -219,3 +243,11 @@ Before first deployment:
 
 **Ready?** Push to main and watch it deploy! 🚀
 
+=======
+### 3. Deploy
+```bash
+git push origin main
+```
+
+Workflows will automatically trigger! See README.md for full documentation.
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

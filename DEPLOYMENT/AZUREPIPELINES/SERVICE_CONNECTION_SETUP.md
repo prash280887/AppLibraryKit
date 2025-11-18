@@ -113,6 +113,7 @@ Service Principal Secret (Password): xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 4. Click **Verify connection**
 5. Should show ✅ if successful
 
+<<<<<<< HEAD
 ### Test with Azure CLI
 
 ```powershell
@@ -127,6 +128,8 @@ az login --service-principal -u $appId -p $password --tenant $tenantId
 az group list
 ```
 
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ## 📝 Step 5: Configure Pipeline Variables
 
 In your Azure DevOps Pipeline, set these variables:
@@ -139,13 +142,17 @@ Add in **Pipeline Settings** → **Variables**:
 AzureServiceConnection     = AzureServiceConnection
 EnvironmentName            = prod
 ProjectName                = applibrarykit
+<<<<<<< HEAD
 AzureSubscriptionId        = xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ResourceGroupName          = applibrarykit-prod-rg
 StorageAccountName         = applibrarykit<unique>
 AppServiceName             = applibrarykit-prod-api
 ReactAppApiBaseUrl         = https://applibrarykit-prod-api.azurewebsites.net
 ```
 
+<<<<<<< HEAD
 ### Backend State Variables (for Terraform Remote State)
 
 ```
@@ -155,6 +162,8 @@ TfBackendContainer         = tfstate
 TfBackendKey               = applibrarykit.tfstate
 ```
 
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ### Secret Variables 🔒
 
 Mark these as **secrets** by clicking lock icon:
@@ -177,6 +186,7 @@ AzureTenantId              = xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
    - Create new secret
    - Update service connection in Azure DevOps
 
+<<<<<<< HEAD
 2. **Use Key Rotation Policy (if available):**
    ```powershell
    # In Azure AD, set automatic rotation
@@ -373,6 +383,8 @@ If service connection fails after some time:
 - [Azure RBAC Roles](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles)
 - [Terraform Azure Backend](https://www.terraform.io/language/settings/backends/azurerm)
 
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ## ✅ Checklist
 
 - [ ] Azure Service Principal created
@@ -380,16 +392,26 @@ If service connection fails after some time:
 - [ ] Service connection verified
 - [ ] Pipeline variables configured
 - [ ] Secret variables marked as secure
+<<<<<<< HEAD
 - [ ] Terraform backend resources created (optional)
 - [ ] Service principal granted appropriate roles
 - [ ] Test pipeline executed successfully
 - [ ] Azure activity logs show service principal usage
 - [ ] Team members have access to pipelines
+=======
+- [ ] Test pipeline executed successfully
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 
 ---
 
 **Next Steps:**
+<<<<<<< HEAD
 1. Configure pipeline variables as described in main [README.md](README.md)
 2. Run test pipeline to verify connectivity
 3. Deploy infrastructure with `azure-pipelines-deploy.yml`
 4. Monitor deployments in Azure DevOps and Azure Portal
+=======
+1. Configure pipeline variables as described above
+2. Run test pipeline to verify connectivity
+3. Deploy infrastructure with `azure-pipelines-deploy.yml`
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

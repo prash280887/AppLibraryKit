@@ -66,7 +66,11 @@ variable "project_name" {
 variable "app_service_sku" {
   description = "SKU for App Service Plan"
   type        = string
+<<<<<<< HEAD
   default     = "B2"  # Basic B1, B2, B3; Standard S1, S2, S3
+=======
+  default     = "B2"
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 }
 
 variable "storage_account_tier" {
@@ -111,12 +115,15 @@ variable "dotnet_runtime_version" {
   default     = "8.0"
 }
 
+<<<<<<< HEAD
 variable "node_runtime_version" {
   description = "Node.js runtime version for Static Web Apps"
   type        = string
   default     = "18"
 }
 
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 # ============================================
 # Local Variables
 # ============================================
@@ -204,7 +211,10 @@ resource "azurerm_linux_web_app" "api" {
     
     always_on         = true
     http2_enabled     = true
+<<<<<<< HEAD
     websockets_enabled = false
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
     minimum_tls_version = "1.2"
     
     cors {
@@ -278,7 +288,11 @@ resource "azurerm_key_vault" "main" {
 # Key Vault Secret for JWT Secret Key
 resource "azurerm_key_vault_secret" "jwt_secret" {
   name         = "JwtSecretKey"
+<<<<<<< HEAD
   value        = "SuperSecureJwtKey1234567890123456789"  # Replace with actual secret
+=======
+  value        = "SuperSecureJwtKey1234567890123456789"
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
   key_vault_id = azurerm_key_vault.main.id
 
   tags = local.common_tags

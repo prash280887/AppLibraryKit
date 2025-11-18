@@ -42,7 +42,10 @@ az ad sp create-for-rbac `
 AzureServiceConnection = AzureServiceConnection
 EnvironmentName = prod
 ProjectName = applibrarykit
+<<<<<<< HEAD
 ResourceGroupName = applibrarykit-prod-rg
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 AppServiceName = applibrarykit-prod-api
 StorageAccountName = applibrarykit<unique>
 ```
@@ -61,7 +64,10 @@ Your pipeline is running!
 - ✅ Builds React app
 - ✅ Builds .NET API
 - ✅ Runs code quality checks
+<<<<<<< HEAD
 - ✅ Validates infrastructure
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 
 **Deployment Pipeline (optional):**
 - 🏗️ Creates Azure resources (Terraform)
@@ -74,6 +80,7 @@ Your pipeline is running!
 2. Click on pipeline run
 3. View logs in real-time
 
+<<<<<<< HEAD
 ## 🛠️ Troubleshooting
 
 **Pipeline failed?** Check logs:
@@ -100,3 +107,8 @@ See [README.md](README.md) for detailed troubleshooting.
 
 **Full Setup Guide:** [README.md](README.md)  
 **Service Connection Details:** [SERVICE_CONNECTION_SETUP.md](SERVICE_CONNECTION_SETUP.md)
+=======
+---
+
+**Full Setup Guide:** [SERVICE_CONNECTION_SETUP.md](SERVICE_CONNECTION_SETUP.md)
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

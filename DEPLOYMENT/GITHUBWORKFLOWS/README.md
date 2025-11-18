@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GitHub Workflows for AppLibraryKit Deployment
 
 This directory contains comprehensive GitHub Actions workflows for building, testing, code quality checks, and deploying both the React frontend and .NET 8 API backend to Azure.
@@ -330,3 +331,16 @@ For issues or improvements, open a GitHub issue or contact the development team.
 
 **Last Updated**: November 2025
 **Version**: 1.0
+=======
+# GitHub Workflows for AppLibraryKit
+
+Comprehensive GitHub Actions workflows for building, testing, and deploying both React SPA and .NET 8 API to Azure.
+
+## 📋 Included Workflows
+
+- **ci-build-quality.yml**: Build, test, and code quality checks
+- **deploy-azure.yml**: Infrastructure provisioning and deployment
+- **Terraform configs**: Azure resource definitions
+
+See README.md for full documentation.
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

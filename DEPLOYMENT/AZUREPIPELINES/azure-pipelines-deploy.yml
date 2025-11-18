@@ -7,7 +7,11 @@ trigger:
     - APPS/**
     - DEPLOYMENT/AZUREPIPELINES/terraform/**
 
+<<<<<<< HEAD
 pr: none  # No PR builds for deployment pipeline
+=======
+pr: none
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -96,7 +100,12 @@ stages:
             inputs:
               command: 'publish'
               publishWebProjects: false
+<<<<<<< HEAD
               projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'\n              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+=======
+              projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
               zipAfterPublish: true
             displayName: 'Publish .NET app'
 
@@ -238,4 +247,106 @@ stages:
                   displayName: 'Purge CDN cache'
                   continueOnError: true
 
+<<<<<<< HEAD
   # ========================================\n  # Stage 5: Deploy .NET API to App Service\n  # ========================================\n  - stage: DeployDotNetToAppService\n    displayName: 'Deploy .NET API to App Service'\n    dependsOn:\n    - BuildDotNetProduction\n    - InfrastructureDeployment\n    condition: succeeded()\n    jobs:\n      - deployment: DeployDotNet\n        displayName: 'Deploy .NET API'\n        environment: '$(EnvironmentName)'\n        strategy:\n          runOnce:\n            deploy:\n              steps:\n                - task: DownloadBuildArtifacts@0\n                  inputs:\n                    buildType: 'current'\n                    downloadType: 'single'\n                    artifactName: 'dotnet-publish-prod'\n                    downloadPath: '$(System.ArtifactsDirectory)'\n                  displayName: 'Download .NET artifacts'\n\n                - task: AzureWebApp@1\n                  inputs:\n                    azureSubscription: '$(AzureServiceConnection)'\n                    appType: 'webAppLinux'\n                    appName: '$(AppServiceName)'\n                    package: '$(System.ArtifactsDirectory)/dotnet-publish-prod'\n                    deploymentMethod: 'zipDeploy'\n                  displayName: 'Deploy to Azure App Service'\n\n                - task: AzureCLI@2\n                  inputs:\n                    azureSubscription: '$(AzureServiceConnection)'\n                    scriptType: 'bash'\n                    scriptLocation: 'inlineScript'\n                    inlineScript: |\n                      sleep 10\n                      STATUS=$(curl -s -o /dev/null -w \"%{http_code}\" https://$(AppServiceName).azurewebsites.net/swagger)\n                      if [ $STATUS -eq 200 ]; then\n                        echo \"✓ App Service is healthy (HTTP $STATUS)\"\n                      else\n                        echo \"⚠ App Service returned status: $STATUS\"\n                      fi\n                  displayName: 'Health check - Swagger endpoint'\n                  continueOnError: true\n\n  # ========================================\n  # Stage 6: Deployment Summary\n  # ========================================\n  - stage: DeploymentSummary\n    displayName: 'Deployment Summary'\n    dependsOn:\n    - DeployReactToStorage\n    - DeployDotNetToAppService\n    condition: always()\n    jobs:\n      - job: SummaryJob\n        displayName: 'Generate Summary Report'\n        steps:\n          - task: DownloadBuildArtifacts@0\n            inputs:\n              buildType: 'current'\n              downloadType: 'single'\n              artifactName: 'terraform-outputs'\n              downloadPath: '$(System.ArtifactsDirectory)'\n            displayName: 'Download Terraform outputs'\n            continueOnError: true\n\n          - script: |\n              echo \"##[group]Deployment Summary\"\n              echo \"Build ID: $(Build.BuildId)\"\n              echo \"Build Number: $(Build.BuildNumber)\"\n              echo \"Source Branch: $(Build.SourceBranch)\"\n              echo \"Repository: $(Build.Repository.Name)\"\n              echo \"\"\n              echo \"Deployment Status:\"\n              echo \"  React SPA: $(Resources.Deployments.DeployReact.result)\"\n              echo \"  .NET API: $(Resources.Deployments.DeployDotNet.result)\"\n              echo \"  Infrastructure: $(Resources.Deployments.TerraformDeploy.result)\"\n              echo \"\"\n              if [ -f \"$(System.ArtifactsDirectory)/terraform-outputs/outputs.json\" ]; then\n                echo \"Infrastructure Outputs:\"\n                cat $(System.ArtifactsDirectory)/terraform-outputs/outputs.json | jq .\n              fi\n              echo \"##[endgroup]\"\n            displayName: 'Display deployment summary'\n            continueOnError: true\n\n          - task: PublishBuildArtifacts@1\n            inputs:\n              PathtoPublish: '$(System.ArtifactsDirectory)'\n              ArtifactName: 'deployment-summary'\n              publishLocation: 'Container'\n            displayName: 'Publish deployment summary'\n            continueOnError: true\n
+=======
+  # ========================================
+  # Stage 5: Deploy .NET API to App Service
+  # ========================================
+  - stage: DeployDotNetToAppService
+    displayName: 'Deploy .NET API to App Service'
+    dependsOn:
+    - BuildDotNetProduction
+    - InfrastructureDeployment
+    condition: succeeded()
+    jobs:
+      - deployment: DeployDotNet
+        displayName: 'Deploy .NET API'
+        environment: '$(EnvironmentName)'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'current'
+                    downloadType: 'single'
+                    artifactName: 'dotnet-publish-prod'
+                    downloadPath: '$(System.ArtifactsDirectory)'
+                  displayName: 'Download .NET artifacts'
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: '$(AzureServiceConnection)'
+                    appType: 'webAppLinux'
+                    appName: '$(AppServiceName)'
+                    package: '$(System.ArtifactsDirectory)/dotnet-publish-prod'
+                    deploymentMethod: 'zipDeploy'
+                  displayName: 'Deploy to Azure App Service'
+
+                - task: AzureCLI@2
+                  inputs:
+                    azureSubscription: '$(AzureServiceConnection)'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      sleep 10
+                      STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$(AppServiceName).azurewebsites.net/swagger)
+                      if [ $STATUS -eq 200 ]; then
+                        echo "✓ App Service is healthy (HTTP $STATUS)"
+                      else
+                        echo "⚠ App Service returned status: $STATUS"
+                      fi
+                  displayName: 'Health check - Swagger endpoint'
+                  continueOnError: true
+
+  # ========================================
+  # Stage 6: Deployment Summary
+  # ========================================
+  - stage: DeploymentSummary
+    displayName: 'Deployment Summary'
+    dependsOn:
+    - DeployReactToStorage
+    - DeployDotNetToAppService
+    condition: always()
+    jobs:
+      - job: SummaryJob
+        displayName: 'Generate Summary Report'
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'terraform-outputs'
+              downloadPath: '$(System.ArtifactsDirectory)'
+            displayName: 'Download Terraform outputs'
+            continueOnError: true
+
+          - script: |
+              echo "##[group]Deployment Summary"
+              echo "Build ID: $(Build.BuildId)"
+              echo "Build Number: $(Build.BuildNumber)"
+              echo "Source Branch: $(Build.SourceBranch)"
+              echo "Repository: $(Build.Repository.Name)"
+              echo ""
+              echo "Deployment Status:"
+              echo "  React SPA: DEPLOYED"
+              echo "  .NET API: DEPLOYED"
+              echo "  Infrastructure: DEPLOYED"
+              echo ""
+              if [ -f "$(System.ArtifactsDirectory)/terraform-outputs/outputs.json" ]; then
+                echo "Infrastructure Outputs:"
+                cat $(System.ArtifactsDirectory)/terraform-outputs/outputs.json | jq .
+              fi
+              echo "##[endgroup]"
+            displayName: 'Display deployment summary'
+            continueOnError: true
+
+            - task: PublishBuildArtifacts@1
+              inputs:
+                PathtoPublish: '$(System.ArtifactsDirectory)'
+                ArtifactName: 'deployment-summary'
+                publishLocation: 'Container'
+              displayName: 'Publish deployment summary'
+              continueOnError: true
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

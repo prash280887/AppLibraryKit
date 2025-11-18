@@ -188,4 +188,8 @@ jobs:
           echo "|-----------|--------|"
           echo "| React SPA | ${{ needs.build-react.result }} |"
           echo "| .NET API | ${{ needs.build-dotnet.result }} |"
+<<<<<<< HEAD
           echo "| Terraform | ${{ needs.validate-terraform.result }} |"
+=======
+          echo "| Terraform | ${{ needs.validate-terraform.result }} |" 
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3

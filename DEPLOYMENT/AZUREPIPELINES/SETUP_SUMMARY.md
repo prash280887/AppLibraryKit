@@ -55,8 +55,11 @@
   - Basic configuration
   - Quick troubleshooting
 
+<<<<<<< HEAD
 - **SETUP_SUMMARY.md** - This file
 
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ## 🚀 Next Steps to Deploy
 
 ### 1. Create Azure Service Principal (5 minutes)
@@ -175,10 +178,17 @@ AzureTenantId = <from-service-principal>
 
 ```
 DEPLOYMENT/AZUREPIPELINES/
+<<<<<<< HEAD
 ├── README.md (Complete guide, 400+ lines)
 ├── QUICKSTART.md (5-minute setup)
 ├── SERVICE_CONNECTION_SETUP.md (Service principal, 500+ lines)
 ├── SETUP_SUMMARY.md (This file)
+=======
+├── README.md
+├── QUICKSTART.md
+├── SERVICE_CONNECTION_SETUP.md
+├── SETUP_SUMMARY.md
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 ├── azure-pipelines-ci.yml
 ├── azure-pipelines-deploy.yml
 └── terraform/
@@ -313,6 +323,9 @@ After successful deployment:
 
 ---
 
+<<<<<<< HEAD
 **Created:** $(date)
+=======
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
 **Status:** ✅ Ready to Deploy
 **Repository:** https://github.com/prash280887/AppLibraryKit

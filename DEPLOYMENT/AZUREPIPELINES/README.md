@@ -15,6 +15,7 @@ This directory contains Azure DevOps pipeline YAML scripts for building, testing
 
 ## 🚀 Quick Start
 
+<<<<<<< HEAD
 ### Prerequisites
 - Azure DevOps organization and project
 - Azure subscription with Contributor role
@@ -322,3 +323,13 @@ For issues or questions:
 ## 📄 License
 
 Same license as parent AppLibraryKit project.
+=======
+See [QUICKSTART.md](QUICKSTART.md) for 5-minute setup instructions.
+
+## 📚 Full Documentation
+
+For detailed setup and troubleshooting:
+1. [SERVICE_CONNECTION_SETUP.md](SERVICE_CONNECTION_SETUP.md) - Service connection configuration
+2. [QUICKSTART.md](QUICKSTART.md) - 5-minute quick start
+3. [README.md](README.md) - Complete setup guide
+>>>>>>> 4c1262cb642ac2382ff24bab4ccb57c432b68bd3
