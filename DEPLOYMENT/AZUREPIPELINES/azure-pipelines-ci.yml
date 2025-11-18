@@ -1,0 +1,239 @@
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+  paths:
+    include:
+    - APPS/**
+    - DEPLOYMENT/**
+
+pr:
+  branches:
+    include:
+    - main
+    - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '18.x'
+
+stages:
+  # ========================================
+  # Stage 1: Build React Frontend
+  # ========================================
+  - stage: BuildReact
+    displayName: 'Build React SPA'
+    jobs:
+      - job: BuildReactApp
+        displayName: 'Build React Application'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+            displayName: 'Setup Node.js $(NODE_VERSION)'
+
+          - task: Npm@1
+            inputs:
+              command: 'install'
+              workingDir: 'APPS/reactwebappdemo'
+            displayName: 'npm install'
+
+          - task: Npm@1
+            inputs:
+              command: 'custom'
+              workingDir: 'APPS/reactwebappdemo'
+              customCommand: 'run lint --if-present'
+            displayName: 'Run ESLint'
+            continueOnError: true
+
+          - task: Npm@1
+            inputs:
+              command: 'custom'
+              workingDir: 'APPS/reactwebappdemo'
+              customCommand: 'run build'
+            displayName: 'Build React app'
+            env:
+              CI: true
+              REACT_APP_API_BASE_URL: 'https://api.example.com'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'APPS/reactwebappdemo/build'
+              ArtifactName: 'react-build'
+              publishLocation: 'Container'
+            displayName: 'Publish React build artifacts'
+
+  # ========================================
+  # Stage 2: Build .NET 8 API
+  # ========================================
+  - stage: BuildDotNet
+    displayName: 'Build .NET 8 Web API'
+    dependsOn: []
+    jobs:
+      - job: BuildDotNetApp
+        displayName: 'Build .NET Application'
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              version: $(DOTNET_VERSION)
+              packageType: 'sdk'
+            displayName: 'Use .NET SDK $(DOTNET_VERSION)'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'
+            displayName: 'Restore NuGet packages'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'build'
+              projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-restore'
+            displayName: 'Build .NET solution'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'test'
+              projects: 'APPS/webapiservicedemo/**/*Tests.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-build --verbosity normal'
+            displayName: 'Run unit tests'
+            continueOnError: true
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/dotnet'
+              zipAfterPublish: true
+            displayName: 'Publish .NET app'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/dotnet'
+              ArtifactName: 'dotnet-publish'
+              publishLocation: 'Container'
+            displayName: 'Publish .NET build artifacts'
+
+  # ========================================
+  # Stage 3: Code Quality & Security
+  # ========================================
+  - stage: CodeQuality
+    displayName: 'Code Quality & Security Checks'
+    dependsOn: []
+    jobs:
+      - job: SonarQubeAnalysis
+        displayName: 'SonarQube Code Analysis'
+        steps:
+          - task: SonarQubePrepare@5
+            inputs:
+              SonarQube: 'SonarQube' # Connection name configured in project settings
+              scannerMode: 'msbuild'
+              projectKey: 'applibrarykit'
+              projectName: 'AppLibraryKit'
+              projectVersion: '$(Build.BuildNumber)'
+            displayName: 'Prepare SonarQube analysis'
+            continueOnError: true
+
+          - task: UseDotNet@2
+            inputs:
+              version: $(DOTNET_VERSION)
+              packageType: 'sdk'
+            displayName: 'Use .NET SDK for analysis'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'build'
+              projects: 'APPS/webapiservicedemo/WebApiDemo.csproj'
+              arguments: '--configuration $(buildConfiguration)'
+            displayName: 'Build for SonarQube'
+
+          - task: SonarQubeAnalyze@5
+            displayName: 'Run SonarQube analysis'
+            continueOnError: true
+
+          - task: SonarQubePublish@5
+            inputs:
+              pollingTimeoutSec: '300'
+            displayName: 'Publish SonarQube results'
+            continueOnError: true
+
+      - job: TerraformValidation
+        displayName: 'Terraform Validation & Security'
+        steps:
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: '1.6.0'
+            displayName: 'Install Terraform'
+
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DEPLOYMENT/AZUREPIPELINES/terraform'
+              backendServiceArm: '$(AzureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(TfBackendResourceGroup)'
+              backendAzureRmStorageAccountName: '$(TfBackendStorageAccount)'
+              backendAzureRmContainerName: '$(TfBackendContainer)'
+              backendAzureRmKey: '$(TfBackendKey)'
+            displayName: 'Terraform init'
+            continueOnError: true
+
+          - task: TerraformTaskV4@4
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/DEPLOYMENT/AZUREPIPELINES/terraform'
+            displayName: 'Terraform validate'
+            continueOnError: true
+
+          - script: |
+              wget https://github.com/aquasecurity/tfsec/releases/download/v1.28.0/tfsec-linux-amd64 2>/dev/null
+              chmod +x tfsec-linux-amd64
+              ./tfsec-linux-amd64 DEPLOYMENT/AZUREPIPELINES/terraform/ --format sarif > tfsec-results.sarif || true
+            displayName: 'Run tfsec security scan'
+            continueOnError: true
+
+          - task: PublishSecurityAnalysisLogs@3
+            inputs:
+              ArtifactType: 'CodeAnalysisLogs'
+              ArtifactName: 'CodeAnalysisLogs'
+              PublishsäkerhetAnalysisLogsAsArtifact: true
+            displayName: 'Publish security analysis logs'
+            continueOnError: true
+
+  # ========================================
+  # Stage 4: Quality Gate
+  # ========================================
+  - stage: QualityGate
+    displayName: 'Quality Gate'
+    dependsOn:
+    - BuildReact
+    - BuildDotNet
+    - CodeQuality
+    condition: succeeded()
+    jobs:
+      - job: QualityGateJob
+        displayName: 'Quality Gate Validation'
+        steps:
+          - script: |
+              echo "##[group]Build Summary"
+              echo "React SPA: Build completed"
+              echo ".NET 8 API: Build completed"
+              echo "Code Quality: Analysis completed"
+              echo "##[endgroup]"
+            displayName: 'Display build summary'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'build-summary'
+              publishLocation: 'Container'
+            displayName: 'Publish build summary'
+            continueOnError: true

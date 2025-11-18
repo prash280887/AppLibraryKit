@@ -1,0 +1,75 @@
+name: Build and Deploy to Azure Storage Static Website
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      # Login to Azure using a Service Principal. You must add the following
+      # repository secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            }
+
+      # Upload build/ contents to the $web container on the storage account.
+      # You must set the following secrets:
+      # - AZURE_STORAGE_ACCOUNT: name of the storage account (created by Terraform)
+      # - AZURE_RESOURCE_GROUP: optional, used if retrieving account keys. Not required when using role-based access with the SP.
+      - name: Deploy to Azure Storage Static Website
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 'latest'
+          inlineScript: |
+            set -e
+            echo "Uploading build/ to storage account: ${{ secrets.AZURE_STORAGE_ACCOUNT }}"
+
+            # Ensure build folder exists
+            if [ ! -d "build" ]; then
+              echo "Build output not found. Exiting. Make sure the build step succeeded and produced a 'build' folder." >&2
+              exit 1
+            fi
+
+            # Try to upload using login auth (service principal must have Storage Blob Data Contributor role)
+            az storage blob upload-batch --account-name "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -s build -d \$web --auth-mode login --no-progress
+
+            echo "Upload finished."
+
+      - name: Show deployed endpoint
+        run: |
+          echo "Azure Static website should be available at:"
+          az storage account show -n "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -g "${{ secrets.AZURE_RESOURCE_GROUP }}" --query "primaryEndpoints.web" -o tsv || true
+
+      - name: Success message
+        run: echo "Deployment to Azure Storage completed."
+
+# Notes:
+# - Create a service principal and grant it 'Storage Blob Data Contributor' on the storage account (or RBAC at resource group level) so the upload works with --auth-mode login.
+# - To create SP and export secrets locally for `az login`, see: https://learn.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli
+# - Alternatively, you can use account keys and `az storage blob upload-batch --account-key` but using a service principal is more secure.
